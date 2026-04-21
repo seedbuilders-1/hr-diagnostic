@@ -1,0 +1,2706 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team Diagnostic Tool — Seedbuilders</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #ffffff;
+        --bg-secondary: #f7f6f2;
+        --bg-info: #e6f1fb;
+        --bg-success: #eaf3de;
+        --bg-warning: #faeeda;
+        --bg-danger: #fcebeb;
+        --text-primary: #1a1a18;
+        --text-secondary: #5f5e5a;
+        --text-tertiary: #9b9a94;
+        --text-info: #0c447c;
+        --text-success: #27500a;
+        --text-warning: #633806;
+        --text-danger: #791f1f;
+        --border: rgba(0, 0, 0, 0.12);
+        --border-md: rgba(0, 0, 0, 0.22);
+        --border-info: rgba(24, 95, 165, 0.35);
+        --border-success: rgba(59, 109, 17, 0.3);
+        --border-warning: rgba(133, 79, 11, 0.3);
+        --radius-md: 8px;
+        --radius-lg: 12px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1c1c1a;
+          --bg-secondary: #252523;
+          --bg-info: #042c53;
+          --bg-success: #173404;
+          --bg-warning: #412402;
+          --bg-danger: #501313;
+          --text-primary: #e8e6de;
+          --text-secondary: #a8a69e;
+          --text-tertiary: #6e6c66;
+          --text-info: #85b7eb;
+          --text-success: #97c459;
+          --text-warning: #ef9f27;
+          --text-danger: #f09595;
+          --border: rgba(255, 255, 255, 0.1);
+          --border-md: rgba(255, 255, 255, 0.2);
+          --border-info: rgba(133, 183, 235, 0.3);
+          --border-success: rgba(151, 196, 89, 0.3);
+          --border-warning: rgba(239, 159, 39, 0.3);
+        }
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2rem 1rem 4rem;
+      }
+      .card {
+        background: var(--bg);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        width: 100%;
+        max-width: 680px;
+      }
+      .brand {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-tertiary);
+        margin-bottom: 6px;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--text-primary);
+        line-height: 1.3;
+        margin-bottom: 8px;
+      }
+      .subtitle {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.65;
+      }
+      .instruction-box {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+        margin: 1rem 0;
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        border-left: 3px solid var(--text-tertiary);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      }
+      .divider {
+        border: none;
+        border-top: 0.5px solid var(--border);
+        margin: 1.5rem 0;
+      }
+      .q-text {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-primary);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        margin-top: 8px;
+      }
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 1.5rem;
+      }
+      .field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      .field-input {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 14px;
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--bg);
+        color: var(--text-primary);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        font-family: inherit;
+      }
+      .field-input:focus {
+        border-color: var(--border-info);
+        box-shadow: 0 0 0 3px var(--bg-info);
+      }
+      .field-input::placeholder {
+        color: var(--text-tertiary);
+      }
+      select.field-input {
+        cursor: pointer;
+      }
+      .privacy-note {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        line-height: 1.6;
+      }
+      .progress-track {
+        width: 100%;
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        margin: 1.5rem 0 0.5rem;
+      }
+      .progress-fill {
+        height: 3px;
+        background: var(--text-info);
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+      .step-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        gap: 8px;
+      }
+      .step-label {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        white-space: nowrap;
+      }
+      .section-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-info);
+        text-align: right;
+        line-height: 1.4;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 1.5rem;
+      }
+      .opt-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        background: var(--bg);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 12px 14px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.45;
+        font-family: inherit;
+      }
+      .opt-btn:hover {
+        border-color: var(--border-md);
+        background: var(--bg-secondary);
+      }
+      .opt-btn.selected {
+        border-color: var(--border-info);
+        background: var(--bg-info);
+        color: var(--text-primary);
+      }
+      .opt-btn.selected .opt-letter {
+        background: var(--text-info);
+        color: #fff;
+        border-color: var(--text-info);
+      }
+      .opt-letter {
+        min-width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 0.5px solid var(--border-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-tertiary);
+        flex-shrink: 0;
+        margin-top: 2px;
+        transition: all 0.15s;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+      }
+      .btn-back {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        padding: 6px 0;
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+      .btn-back:hover {
+        color: var(--text-secondary);
+      }
+      .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+        transition: opacity 0.15s;
+      }
+      .btn-primary:hover {
+        opacity: 0.85;
+      }
+      .btn-primary:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .btn-outline {
+        background: none;
+        border: 0.5px solid var(--border-md);
+        border-radius: var(--radius-md);
+        padding: 10px 20px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .loading-dots {
+        display: inline-flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .loading-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text-tertiary);
+        animation: dot 0.9s infinite;
+      }
+      .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes dot {
+        0%,
+        80%,
+        100% {
+          opacity: 0.2;
+        }
+        40% {
+          opacity: 1;
+        }
+      }
+      .submitting-box {
+        text-align: center;
+        padding: 3rem 0;
+      }
+      .submitting-box p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 1rem;
+      }
+      .thankyou-icon {
+        font-size: 48px;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .thankyou-title {
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+      }
+      .thankyou-body {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.75;
+        margin-bottom: 1.5rem;
+      }
+      .email-status {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        margin-top: 10px;
+        min-height: 18px;
+      }
+      .email-status.sent {
+        color: var(--text-success);
+      }
+      .email-status.error {
+        color: var(--text-danger);
+      }
+      .config-banner {
+        background: var(--bg-warning);
+        border: 0.5px solid var(--border-warning);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+        font-size: 13px;
+        color: var(--text-warning);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+      .config-banner code {
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        background: rgba(0, 0, 0, 0.07);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+      .section-intro {
+        background: var(--bg-secondary);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        padding: 12px 14px;
+        margin-bottom: 1rem;
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        border-left: 3px solid var(--text-info);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <!-- LEAD CAPTURE -->
+      <div id="lead-view">
+        <div class="brand">Seedbuilders</div>
+        <h1>Team Diagnostic Tool</h1>
+        <p class="subtitle">
+          A structured assessment of team and individual effectiveness across 14
+          capability areas.
+        </p>
+        <div class="instruction-box">
+          <strong>Instruction:</strong> Select the option that best reflects
+          your actual day-to-day experience, based on evidence and consistency —
+          not isolated instances.
+        </div>
+        <div class="divider"></div>
+        <p class="q-text" style="margin-top: 0">
+          Tell us about you and your organisation
+        </p>
+        <div class="field-group">
+          <div class="field-wrap">
+            <label class="field-label" for="lead-name">Your full name</label>
+            <input
+              class="field-input"
+              id="lead-name"
+              type="text"
+              placeholder="e.g. Chidi Okonkwo"
+              oninput="checkLead()"
+            />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-role">Your job title</label>
+            <input
+              class="field-input"
+              id="lead-role"
+              type="text"
+              placeholder="e.g. Senior Marketing Manager"
+              oninput="checkLead()"
+            />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-dept"
+              >Your department / team</label
+            >
+            <input
+              class="field-input"
+              id="lead-dept"
+              type="text"
+              placeholder="e.g. Sales & Marketing"
+              oninput="checkLead()"
+            />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-org">Organisation name</label>
+            <input
+              class="field-input"
+              id="lead-org"
+              type="text"
+              placeholder="e.g. Zenith Solutions Ltd"
+              oninput="checkLead()"
+            />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-industry"
+              >Industry / sector</label
+            >
+            <input
+              class="field-input"
+              id="lead-industry"
+              type="text"
+              placeholder="e.g. Financial Services"
+              oninput="checkLead()"
+            />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-size">Organisation size</label>
+            <select class="field-input" id="lead-size" onchange="checkLead()">
+              <option value="">Select headcount range</option>
+              <option>1 – 20 employees</option>
+              <option>21 – 50 employees</option>
+              <option>51 – 100 employees</option>
+              <option>101 – 250 employees</option>
+              <option>251 – 500 employees</option>
+              <option>500+ employees</option>
+            </select>
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-email">Work email</label>
+            <input
+              class="field-input"
+              id="lead-email"
+              type="email"
+              placeholder="you@yourorg.com"
+              oninput="checkLead()"
+            />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label" for="lead-phone"
+              >Phone
+              <span style="font-weight: 400; color: var(--text-tertiary)"
+                >(optional)</span
+              ></label
+            >
+            <input
+              class="field-input"
+              id="lead-phone"
+              type="tel"
+              placeholder="+234 800 000 0000"
+            />
+          </div>
+        </div>
+        <p class="privacy-note">
+          Your details are used only to deliver your diagnostic report. We do
+          not share your information with third parties.
+        </p>
+        <div style="height: 1.5rem"></div>
+        <div class="nav">
+          <span></span>
+          <button
+            class="btn-primary"
+            id="btn-start"
+            onclick="startDiagnostic()"
+            disabled
+          >
+            Begin diagnostic
+          </button>
+        </div>
+      </div>
+
+      <!-- QUESTIONS -->
+      <div id="form-view" style="display: none">
+        <div class="brand">Seedbuilders &middot; Team Diagnostic</div>
+        <div
+          style="font-size: 14px; color: var(--text-secondary); margin-top: 2px"
+          id="form-org-label"
+        ></div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress" style="width: 0%"></div>
+        </div>
+        <div class="step-meta">
+          <span class="step-label" id="step-label">Question 1 of 80</span>
+          <span class="section-label" id="section-label"></span>
+        </div>
+        <div id="q-area"></div>
+        <div class="nav">
+          <button
+            class="btn-back"
+            id="btn-back"
+            onclick="goBack()"
+            style="visibility: hidden"
+          >
+            Back
+          </button>
+          <button class="btn-primary" id="btn-next" onclick="goNext()" disabled>
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- SUBMITTING -->
+      <div id="submitting-view" style="display: none">
+        <div class="submitting-box">
+          <div class="loading-dots" style="justify-content: center">
+            <span></span><span></span><span></span>
+          </div>
+          <p>Submitting your responses...</p>
+        </div>
+      </div>
+
+      <!-- THANK YOU -->
+      <div id="result-view" style="display: none">
+        <div id="result-inner"></div>
+      </div>
+    </div>
+    <script>
+      const FORMSPREE_ENDPOINT = "YOUR_FORMSPREE_ENDPOINT";
+      const ADMIN_EMAIL = "development@seedbuildersng.com";
+      const CLIENT_SUPPORT_EMAIL = "sales@seedbuildersng.com";
+
+      const QUESTIONS = [
+        // ── SECTION 1: LEADERSHIP & MANAGEMENT EFFECTIVENESS ───────────────
+        {
+          section: "Section 1: Leadership & Management Effectiveness",
+          text: "How effectively does your manager provide clarity on goals, priorities, and expectations?",
+          options: [
+            {
+              letter: "A",
+              text: "Goals and priorities are consistently translated into clear, actionable expectations, with alignment to team and organisational objectives and minimal ambiguity",
+            },
+            {
+              letter: "B",
+              text: "Goals are generally clear, but translation into day-to-day priorities is sometimes inconsistent or dependent on context",
+            },
+            {
+              letter: "C",
+              text: "Goals exist but are frequently unclear, conflicting, or not effectively translated into actionable work priorities",
+            },
+            {
+              letter: "D",
+              text: "Lack of clear goals and direction, resulting in frequent confusion, rework, or misaligned efforts",
+            },
+          ],
+        },
+        {
+          section: "Section 1: Leadership & Management Effectiveness",
+          text: "How effectively does your manager drive performance and capability development?",
+          options: [
+            {
+              letter: "A",
+              text: "Performance is actively managed through structured goal setting, regular feedback, and coaching, with clear development actions and follow-through",
+            },
+            {
+              letter: "B",
+              text: "Performance management exists but is inconsistently applied, with irregular feedback and limited structured development",
+            },
+            {
+              letter: "C",
+              text: "Performance is managed reactively, with limited coaching and minimal focus on development",
+            },
+            {
+              letter: "D",
+              text: "No structured performance management; limited feedback or development support",
+            },
+          ],
+        },
+        {
+          section: "Section 1: Leadership & Management Effectiveness",
+          text: "How effectively is underperformance addressed within your team?",
+          options: [
+            {
+              letter: "A",
+              text: "Underperformance is identified early and addressed through structured interventions (clear expectations, feedback, improvement plans) with measurable outcomes",
+            },
+            {
+              letter: "B",
+              text: "Underperformance is addressed but lacks consistency, structure, or sustained follow-through",
+            },
+            {
+              letter: "C",
+              text: "Underperformance is addressed only after escalation, with limited effectiveness",
+            },
+            {
+              letter: "D",
+              text: "Underperformance is largely unaddressed, resulting in ongoing performance issues",
+            },
+          ],
+        },
+
+        // ── SECTION 2: TECHNICAL / FUNCTIONAL CAPABILITY ───────────────────
+        {
+          section: "Section 2: Technical / Functional Capability",
+          text: "How effectively are you able to perform the technical and functional requirements of your role?",
+          options: [
+            {
+              letter: "A",
+              text: "I consistently deliver high-quality outputs across both routine and complex tasks, applying advanced expertise with minimal supervision and contributing to improvements in how work is executed",
+            },
+            {
+              letter: "B",
+              text: "I reliably deliver expected outputs for standard tasks, and can handle more complex work with occasional guidance or review",
+            },
+            {
+              letter: "C",
+              text: "I can complete routine tasks but face challenges with non-standard or complex requirements, often requiring support",
+            },
+            {
+              letter: "D",
+              text: "I struggle to meet role requirements due to gaps in technical/functional capability, impacting output quality or timelines",
+            },
+          ],
+        },
+        {
+          section: "Section 2: Technical / Functional Capability",
+          text: "How well do your current skills align with the evolving demands of your role and the business?",
+          options: [
+            {
+              letter: "A",
+              text: "My skills are continuously updated and aligned with current tools, processes, and emerging business needs, enabling me to adapt and contribute beyond my core responsibilities",
+            },
+            {
+              letter: "B",
+              text: "My skills align with most current requirements, though there are some gaps in newer tools or evolving expectations",
+            },
+            {
+              letter: "C",
+              text: "There is a noticeable gap between my current skills and emerging role requirements, limiting effectiveness in certain areas",
+            },
+            {
+              letter: "D",
+              text: "My skills are significantly misaligned with role and business needs, affecting overall performance",
+            },
+          ],
+        },
+        {
+          section: "Section 2: Technical / Functional Capability",
+          text: "How effectively do you translate your knowledge into practical execution and results?",
+          options: [
+            {
+              letter: "A",
+              text: "I consistently apply my knowledge to solve problems, improve processes, and deliver measurable outcomes across different scenarios",
+            },
+            {
+              letter: "B",
+              text: "I effectively apply my knowledge in most situations, with occasional challenges in more complex or unfamiliar contexts",
+            },
+            {
+              letter: "C",
+              text: "I have the knowledge but struggle to consistently apply it to real work situations",
+            },
+            {
+              letter: "D",
+              text: "There is a significant gap between what I know and what I can execute effectively",
+            },
+          ],
+        },
+        {
+          section: "Section 2: Technical / Functional Capability",
+          text: "How effectively do the tools, systems, and technologies you use enable high performance?",
+          options: [
+            {
+              letter: "A",
+              text: "Tools are fully integrated into workflows, enabling efficiency, automation, and high-quality output with minimal friction",
+            },
+            {
+              letter: "B",
+              text: "Tools support core work effectively but are not fully optimised or consistently utilised",
+            },
+            {
+              letter: "C",
+              text: "Tools are available but create inefficiencies, requiring workarounds or manual effort",
+            },
+            {
+              letter: "D",
+              text: "Tools significantly limit performance due to poor functionality, access, or utilisation",
+            },
+          ],
+        },
+        {
+          section: "Section 2: Technical / Functional Capability",
+          text: "What is the most significant constraint affecting your technical and functional performance?",
+          options: [
+            {
+              letter: "A",
+              text: "Limited exposure to advanced or high-impact work required to deepen expertise",
+            },
+            {
+              letter: "B",
+              text: "Gaps in skills related to evolving tools, systems, or methodologies",
+            },
+            {
+              letter: "C",
+              text: "Difficulty translating knowledge into consistent execution",
+            },
+            {
+              letter: "D",
+              text: "Lack of clear standards, structure, or support for effective performance",
+            },
+          ],
+        },
+
+        // ── SECTION 3: EXECUTION, ACCOUNTABILITY & PRODUCTIVITY ────────────
+        {
+          section: "Section 3: Execution, Accountability & Productivity",
+          text: "How effectively are tasks and responsibilities executed within your team?",
+          options: [
+            {
+              letter: "A",
+              text: "Execution is disciplined, with clear ownership, structured tracking, and consistent delivery of high-quality outcomes within timelines",
+            },
+            {
+              letter: "B",
+              text: "Execution is generally effective but lacks consistency under pressure or changing priorities",
+            },
+            {
+              letter: "C",
+              text: "Execution is inconsistent, with frequent delays, rework, or unclear ownership",
+            },
+            {
+              letter: "D",
+              text: "Execution is weak, with poor follow-through and frequent delivery failures",
+            },
+          ],
+        },
+        {
+          section: "Section 3: Execution, Accountability & Productivity",
+          text: "How would you assess accountability within your team?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong accountability culture — individuals take ownership of outcomes with minimal need for escalation or follow-up",
+            },
+            {
+              letter: "B",
+              text: "Moderate accountability — ownership exists but often requires reinforcement or managerial follow-up",
+            },
+            {
+              letter: "C",
+              text: "Limited accountability — tasks frequently require monitoring to ensure completion",
+            },
+            {
+              letter: "D",
+              text: "Weak accountability — lack of ownership leads to delays, missed deliverables, or incomplete work",
+            },
+          ],
+        },
+        {
+          section: "Section 3: Execution, Accountability & Productivity",
+          text: "How effectively are competing priorities managed within your team?",
+          options: [
+            {
+              letter: "A",
+              text: "Prioritisation is structured and aligned to strategic objectives, enabling focus on high-impact work",
+            },
+            {
+              letter: "B",
+              text: "Prioritisation is generally effective but occasionally impacted by competing demands",
+            },
+            {
+              letter: "C",
+              text: "Prioritisation is inconsistent, leading to shifting focus and inefficiencies",
+            },
+            {
+              letter: "D",
+              text: "Lack of prioritisation discipline results in reactive work and misallocation of effort",
+            },
+          ],
+        },
+
+        // ── SECTION 4: ORGANISATIONAL REVENUE ENGINE & GROWTH CAPABILITY ───
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How clearly do you understand how your role contributes to revenue generation or organisational growth?",
+          options: [
+            {
+              letter: "A",
+              text: "I have a clear line-of-sight between my work, team objectives, and how value is created and converted into revenue or growth outcomes",
+            },
+            {
+              letter: "B",
+              text: "I generally understand how my work contributes, though not always clearly linked to revenue outcomes",
+            },
+            {
+              letter: "C",
+              text: "I have limited visibility into how my role connects to revenue or growth",
+            },
+            {
+              letter: "D",
+              text: "I do not understand how my work contributes to revenue or organisational growth",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How well aligned are teams (e.g. sales, operations, delivery, support) in driving revenue and customer outcomes?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong alignment across teams, with coordinated efforts, shared priorities, and seamless execution toward revenue and customer value",
+            },
+            {
+              letter: "B",
+              text: "General alignment exists but with occasional disconnects between teams",
+            },
+            {
+              letter: "C",
+              text: "Limited alignment, with noticeable gaps in coordination and shared priorities",
+            },
+            {
+              letter: "D",
+              text: "Teams operate in silos, leading to friction and missed revenue opportunities",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How effectively are customer needs understood and reflected in how work is executed?",
+          options: [
+            {
+              letter: "A",
+              text: "Customer needs are clearly understood and consistently drive how work is prioritised, delivered, and improved",
+            },
+            {
+              letter: "B",
+              text: "Customer needs are generally understood but not always reflected in execution",
+            },
+            {
+              letter: "C",
+              text: "Limited understanding of customer needs, with inconsistent application",
+            },
+            {
+              letter: "D",
+              text: "Customer needs are not clearly understood or considered in daily work",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How effectively does your team convert work efforts into measurable outcomes (e.g. results, value delivery, client satisfaction)?",
+          options: [
+            {
+              letter: "A",
+              text: "Work is consistently outcome-driven, with clear objectives, measurable results, and strong follow-through",
+            },
+            {
+              letter: "B",
+              text: "Work generally leads to results but lacks consistent measurement or clarity",
+            },
+            {
+              letter: "C",
+              text: "Outcomes are inconsistent, with limited visibility into impact",
+            },
+            {
+              letter: "D",
+              text: "Work is activity-driven with little connection to measurable outcomes",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How effectively are internal processes and systems supporting revenue generation and delivery?",
+          options: [
+            {
+              letter: "A",
+              text: "Processes are streamlined and enable efficient delivery, customer satisfaction, and revenue growth",
+            },
+            {
+              letter: "B",
+              text: "Processes support core work but include inefficiencies that slow execution",
+            },
+            {
+              letter: "C",
+              text: "Processes create delays, rework, or missed opportunities",
+            },
+            {
+              letter: "D",
+              text: "Processes significantly hinder performance and revenue outcomes",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How effectively are opportunities (e.g. new clients, projects, partnerships) identified and acted upon?",
+          options: [
+            {
+              letter: "A",
+              text: "Opportunities are proactively identified, shared, and acted on with clear ownership and follow-through",
+            },
+            {
+              letter: "B",
+              text: "Opportunities are identified but not always consistently acted upon",
+            },
+            {
+              letter: "C",
+              text: "Opportunities are occasionally recognised but often missed or delayed",
+            },
+            {
+              letter: "D",
+              text: "Opportunities are rarely identified or pursued",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "How effectively is information related to customers, opportunities, and performance shared across teams?",
+          options: [
+            {
+              letter: "A",
+              text: "Information is transparently shared, easily accessible, and supports coordinated action across teams",
+            },
+            {
+              letter: "B",
+              text: "Information is generally shared but not always timely or complete",
+            },
+            {
+              letter: "C",
+              text: "Information sharing is inconsistent, leading to inefficiencies",
+            },
+            {
+              letter: "D",
+              text: "Poor information flow limits coordination and decision-making",
+            },
+          ],
+        },
+        {
+          section:
+            "Section 4: Organisational Revenue Engine & Growth Capability",
+          text: "What is the most significant barrier limiting revenue growth in your organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Lack of alignment and coordination across teams",
+            },
+            { letter: "B", text: "Inefficiencies in processes and execution" },
+            {
+              letter: "C",
+              text: "Limited understanding of customer needs and value delivery",
+            },
+            {
+              letter: "D",
+              text: "Missed opportunities and weak follow-through",
+            },
+          ],
+        },
+
+        // ── SECTION 5: PROBLEM-SOLVING & ANALYTICAL CAPABILITY ─────────────
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "How effectively are problems identified and clearly defined before action is taken?",
+          options: [
+            {
+              letter: "A",
+              text: "Problems are consistently well-defined with clear articulation of root causes, scope, and impact before solutions are pursued",
+            },
+            {
+              letter: "B",
+              text: "Problems are generally identified and defined, though depth of analysis may vary",
+            },
+            {
+              letter: "C",
+              text: "Problems are often addressed at a surface level without full clarity on underlying causes",
+            },
+            {
+              letter: "D",
+              text: "Problems are poorly defined, leading to misdirected efforts and recurring issues",
+            },
+          ],
+        },
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "How effectively do you and your team analyse information and data when solving problems?",
+          options: [
+            {
+              letter: "A",
+              text: "Decisions are consistently informed by structured analysis, relevant data, and critical evaluation of alternatives",
+            },
+            {
+              letter: "B",
+              text: "Data and analysis are used in most cases but not consistently or in depth",
+            },
+            {
+              letter: "C",
+              text: "Limited use of data; decisions are often based on assumptions or incomplete information",
+            },
+            {
+              letter: "D",
+              text: "Minimal or no analytical approach; decisions are largely reactive or intuitive",
+            },
+          ],
+        },
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "How effectively are root causes identified and addressed versus temporary fixes?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong focus on root cause analysis, with solutions designed to prevent recurrence and improve systems",
+            },
+            {
+              letter: "B",
+              text: "Root causes are sometimes identified, but solutions may still focus on immediate fixes",
+            },
+            {
+              letter: "C",
+              text: "Limited root cause analysis; recurring issues are common",
+            },
+            {
+              letter: "D",
+              text: "Problems are repeatedly addressed without resolving underlying causes",
+            },
+          ],
+        },
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "How effective are the solutions developed in resolving problems and improving outcomes?",
+          options: [
+            {
+              letter: "A",
+              text: "Solutions are well-structured, practical, and lead to measurable and sustainable improvements",
+            },
+            {
+              letter: "B",
+              text: "Solutions generally resolve issues but may lack long-term effectiveness",
+            },
+            {
+              letter: "C",
+              text: "Solutions are inconsistent and may not fully address the problem",
+            },
+            {
+              letter: "D",
+              text: "Solutions are ineffective, leading to repeated issues or escalation",
+            },
+          ],
+        },
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "How independently are problems resolved within your team?",
+          options: [
+            {
+              letter: "A",
+              text: "Teams proactively identify and resolve problems independently, with minimal need for escalation",
+            },
+            {
+              letter: "B",
+              text: "Most problems are resolved within the team, with escalation for complex issues",
+            },
+            {
+              letter: "C",
+              text: "Frequent reliance on escalation, even for moderately complex problems",
+            },
+            {
+              letter: "D",
+              text: "High dependence on management to resolve most issues",
+            },
+          ],
+        },
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "How effectively are lessons learned from past problems applied to prevent recurrence?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong learning culture — issues are reviewed, documented, and used to improve processes and decision-making",
+            },
+            {
+              letter: "B",
+              text: "Some learning occurs, but not consistently applied across teams",
+            },
+            {
+              letter: "C",
+              text: "Limited reflection or learning from past issues",
+            },
+            {
+              letter: "D",
+              text: "No structured learning; issues recur frequently",
+            },
+          ],
+        },
+        {
+          section: "Section 5: Problem-Solving & Analytical Capability",
+          text: "What is the most significant gap in problem-solving and analytical capability within your organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Limited depth in analysing problems and identifying root causes",
+            },
+            {
+              letter: "B",
+              text: "Inconsistent use of data and structured thinking in decision-making",
+            },
+            {
+              letter: "C",
+              text: "Weak translation of analysis into effective solutions",
+            },
+            {
+              letter: "D",
+              text: "Over-reliance on escalation and lack of independent problem-solving",
+            },
+          ],
+        },
+
+        // ── SECTION 6: CUSTOMER SERVICE, EXPERIENCE & EXCELLENCE ───────────
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How clearly do you understand customer needs, expectations, and what defines value for them?",
+          options: [
+            {
+              letter: "A",
+              text: "Customer needs and expectations are clearly understood and consistently guide how work is prioritised and delivered",
+            },
+            {
+              letter: "B",
+              text: "Customer needs are generally understood but not always consistently applied in execution",
+            },
+            {
+              letter: "C",
+              text: "Limited understanding of customer expectations, leading to inconsistent service delivery",
+            },
+            {
+              letter: "D",
+              text: "Customer needs are not clearly understood or considered in day-to-day work",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How consistently is a high-quality customer experience delivered across interactions?",
+          options: [
+            {
+              letter: "A",
+              text: "Customer experience is consistently high-quality across all touchpoints, with minimal variation regardless of team or channel",
+            },
+            {
+              letter: "B",
+              text: "Experience is generally good but may vary across teams or situations",
+            },
+            {
+              letter: "C",
+              text: "Experience is inconsistent, depending on individuals or circumstances",
+            },
+            {
+              letter: "D",
+              text: "Customer experience is frequently below expectations",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How effectively are customer issues or complaints handled and resolved?",
+          options: [
+            {
+              letter: "A",
+              text: "Issues are resolved promptly with clear ownership, effective communication, and a focus on long-term resolution",
+            },
+            {
+              letter: "B",
+              text: "Issues are generally resolved but may lack consistency or speed",
+            },
+            {
+              letter: "C",
+              text: "Resolution is inconsistent, with delays or partial solutions",
+            },
+            {
+              letter: "D",
+              text: "Issues are poorly handled or frequently escalated without resolution",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How well do teams take ownership of customer outcomes — not just tasks?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong ownership culture — teams are accountable for end-to-end customer outcomes and satisfaction",
+            },
+            {
+              letter: "B",
+              text: "Ownership exists but is sometimes limited to specific roles or tasks",
+            },
+            {
+              letter: "C",
+              text: "Partial ownership, with frequent handoffs and unclear accountability",
+            },
+            {
+              letter: "D",
+              text: "Lack of ownership leads to gaps in service delivery",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How effectively do internal teams collaborate to deliver a seamless customer experience?",
+          options: [
+            {
+              letter: "A",
+              text: "Cross-functional collaboration is seamless, with aligned processes and shared responsibility for customer outcomes",
+            },
+            {
+              letter: "B",
+              text: "Collaboration exists but may involve some delays or misalignment",
+            },
+            {
+              letter: "C",
+              text: "Limited collaboration leads to fragmented customer experiences",
+            },
+            {
+              letter: "D",
+              text: "Poor collaboration significantly impacts customer experience",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How effectively is customer feedback (formal or informal) captured and used to improve service?",
+          options: [
+            {
+              letter: "A",
+              text: "Feedback is systematically collected, analysed, and used to drive continuous improvement",
+            },
+            {
+              letter: "B",
+              text: "Feedback is collected but not consistently acted upon",
+            },
+            { letter: "C", text: "Limited use of feedback for improvement" },
+            {
+              letter: "D",
+              text: "Customer feedback is rarely captured or used",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "How well are service standards, processes, and expectations defined and followed?",
+          options: [
+            {
+              letter: "A",
+              text: "Clear service standards exist and are consistently applied across teams and interactions",
+            },
+            {
+              letter: "B",
+              text: "Standards exist but are not consistently followed",
+            },
+            {
+              letter: "C",
+              text: "Standards are unclear or inconsistently applied",
+            },
+            {
+              letter: "D",
+              text: "No clear service standards guiding delivery",
+            },
+          ],
+        },
+        {
+          section: "Section 6: Customer Service, Experience & Excellence",
+          text: "What is the most significant barrier to delivering excellent customer experience in your organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Limited understanding of customer needs and expectations",
+            },
+            {
+              letter: "B",
+              text: "Inconsistent service standards and delivery",
+            },
+            {
+              letter: "C",
+              text: "Weak ownership and collaboration across teams",
+            },
+            {
+              letter: "D",
+              text: "Poor use of customer feedback to improve services",
+            },
+          ],
+        },
+
+        // ── SECTION 7: COMMUNICATION & INTERPERSONAL EFFECTIVENESS ─────────
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How effective is communication within your team and across departments?",
+          options: [
+            {
+              letter: "A",
+              text: "Communication is structured, timely, and outcome-oriented, enabling alignment and efficient execution",
+            },
+            {
+              letter: "B",
+              text: "Communication is generally effective but occasionally lacks clarity or consistency",
+            },
+            {
+              letter: "C",
+              text: "Communication is fragmented or inconsistent, leading to misunderstandings and delays",
+            },
+            {
+              letter: "D",
+              text: "Poor communication significantly impacts coordination and performance",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How effectively is feedback exchanged within your team?",
+          options: [
+            {
+              letter: "A",
+              text: "Feedback is frequent, structured, and actionable, contributing to continuous performance improvement",
+            },
+            {
+              letter: "B",
+              text: "Feedback is provided but inconsistently and not always actionable",
+            },
+            {
+              letter: "C",
+              text: "Feedback is infrequent and lacks clarity or impact",
+            },
+            {
+              letter: "D",
+              text: "Feedback is rarely given or avoided altogether",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How effectively are digital communication channels (e.g. email, chat, collaboration platforms) used to support clarity and execution?",
+          options: [
+            {
+              letter: "A",
+              text: "Communication across digital channels is structured, purposeful, and aligned to workflows, enabling clear decisions, minimal back-and-forth, and efficient execution",
+            },
+            {
+              letter: "B",
+              text: "Communication is generally effective, though some messages lack structure or require follow-up for clarity",
+            },
+            {
+              letter: "C",
+              text: "Communication is often fragmented or inconsistent across channels, leading to repeated clarifications and delays",
+            },
+            {
+              letter: "D",
+              text: "Communication is unstructured and inefficient, significantly affecting coordination and execution",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How well are communication norms and expectations (e.g. response time, channel usage, escalation) defined and followed?",
+          options: [
+            {
+              letter: "A",
+              text: "Clear communication protocols are defined, widely understood, and consistently followed across teams",
+            },
+            {
+              letter: "B",
+              text: "Some norms exist but are not consistently applied across all teams or situations",
+            },
+            {
+              letter: "C",
+              text: "Communication expectations are informal or inconsistently followed",
+            },
+            {
+              letter: "D",
+              text: "No clear communication norms, leading to confusion and inefficiency",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How effectively do digital tools enable collaboration and coordination across teams?",
+          options: [
+            {
+              letter: "A",
+              text: "Collaboration tools are fully integrated into workflows, enabling real-time coordination, transparency, and seamless task management",
+            },
+            {
+              letter: "B",
+              text: "Tools support collaboration in most cases but are not fully optimised or consistently used",
+            },
+            {
+              letter: "C",
+              text: "Collaboration tools are used inconsistently, with reliance on manual coordination or workarounds",
+            },
+            {
+              letter: "D",
+              text: "Tools do not effectively support collaboration, resulting in delays and misalignment",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How clear and actionable are messages and information shared through digital platforms?",
+          options: [
+            {
+              letter: "A",
+              text: "Communication is consistently clear, concise, and actionable, enabling immediate understanding and execution",
+            },
+            {
+              letter: "B",
+              text: "Communication is generally clear but occasionally requires clarification",
+            },
+            {
+              letter: "C",
+              text: "Messages are often unclear, incomplete, or lack actionable direction",
+            },
+            {
+              letter: "D",
+              text: "Communication frequently leads to confusion, rework, or misinterpretation",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How effectively do teams collaborate across departments using digital platforms?",
+          options: [
+            {
+              letter: "A",
+              text: "Cross-functional collaboration is seamless, with shared visibility, aligned workflows, and minimal friction",
+            },
+            {
+              letter: "B",
+              text: "Collaboration exists but occasionally experiences delays or misalignment",
+            },
+            {
+              letter: "C",
+              text: "Collaboration is inconsistent, with noticeable silos between teams",
+            },
+            {
+              letter: "D",
+              text: "Collaboration is weak, with significant barriers between departments",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "How effectively is information shared, stored, and accessed across the organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Information is well-organised, easily accessible, and consistently updated across shared platforms",
+            },
+            {
+              letter: "B",
+              text: "Information is generally accessible but sometimes difficult to locate or outdated",
+            },
+            {
+              letter: "C",
+              text: "Information is inconsistently stored, leading to inefficiencies",
+            },
+            {
+              letter: "D",
+              text: "Information is poorly managed, causing delays and repeated work",
+            },
+          ],
+        },
+        {
+          section: "Section 7: Communication & Interpersonal Effectiveness",
+          text: "What is the most significant barrier to effective digital communication and collaboration in your organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Lack of structured communication practices and clarity in messaging",
+            },
+            {
+              letter: "B",
+              text: "Inconsistent use or optimisation of collaboration tools",
+            },
+            {
+              letter: "C",
+              text: "Poor cross-team coordination and information sharing",
+            },
+            {
+              letter: "D",
+              text: "Delays in decision-making and unclear communication of outcomes",
+            },
+          ],
+        },
+
+        // ── SECTION 8: DIGITAL SKILLS & WORKPLACE TECHNOLOGY ───────────────
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How effectively do digital tools and systems enable your productivity and performance?",
+          options: [
+            {
+              letter: "A",
+              text: "Tools are fully integrated into workflows, enabling automation, efficiency, and real-time visibility of work",
+            },
+            {
+              letter: "B",
+              text: "Tools support core tasks but are not fully optimised or consistently used",
+            },
+            {
+              letter: "C",
+              text: "Tools are partially effective, with reliance on manual workarounds",
+            },
+            {
+              letter: "D",
+              text: "Tools are inadequate or poorly utilised, significantly limiting productivity",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How would you rate your ability to effectively use digital tools required for your role?",
+          options: [
+            {
+              letter: "A",
+              text: "High proficiency — able to use tools independently for advanced tasks, optimisation, and problem-solving",
+            },
+            {
+              letter: "B",
+              text: "Functional proficiency — able to perform required tasks with occasional support",
+            },
+            {
+              letter: "C",
+              text: "Basic proficiency — limited to routine tasks with frequent need for assistance",
+            },
+            {
+              letter: "D",
+              text: "Low proficiency — unable to effectively use required tools",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How effectively do you adapt to new tools, technologies, and ways of working?",
+          options: [
+            {
+              letter: "A",
+              text: "I proactively adopt and experiment with new tools and approaches, quickly integrating them into my work to improve outcomes",
+            },
+            {
+              letter: "B",
+              text: "I adapt to new tools and ways of working with minimal difficulty when required",
+            },
+            {
+              letter: "C",
+              text: "I find it challenging to adapt and require time and support to adjust",
+            },
+            {
+              letter: "D",
+              text: "I struggle significantly to adapt to new tools or changes in how work is done",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How well does your current role prepare you for future skills and ways of working?",
+          options: [
+            {
+              letter: "A",
+              text: "My role continuously exposes me to new skills, tools, and ways of thinking that prepare me for future demands",
+            },
+            {
+              letter: "B",
+              text: "My role provides some exposure to evolving skills, but not consistently",
+            },
+            {
+              letter: "C",
+              text: "My role is mostly focused on current tasks with limited future-oriented skill development",
+            },
+            {
+              letter: "D",
+              text: "My role does not prepare me for future skills or changes in the workplace",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How aware are you of emerging trends (e.g. digital tools, AI, industry changes) relevant to your work?",
+          options: [
+            {
+              letter: "A",
+              text: "I actively stay informed and understand how emerging trends impact my role and the organisation",
+            },
+            {
+              letter: "B",
+              text: "I am generally aware of key trends but do not actively engage with them",
+            },
+            {
+              letter: "C",
+              text: "I have limited awareness of emerging trends",
+            },
+            {
+              letter: "D",
+              text: "I am not aware of trends impacting my role or industry",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How effectively does the organisation encourage continuous learning and upskilling?",
+          options: [
+            {
+              letter: "A",
+              text: "Continuous learning is embedded in the culture, with structured opportunities and strong encouragement to develop new capabilities",
+            },
+            {
+              letter: "B",
+              text: "Learning is encouraged, with some opportunities available but not consistently",
+            },
+            {
+              letter: "C",
+              text: "Limited encouragement or structured opportunities for learning",
+            },
+            {
+              letter: "D",
+              text: "No meaningful focus on continuous learning or upskilling",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How prepared do you feel to handle changes in your role or work environment (e.g. new processes, restructuring, technology)?",
+          options: [
+            {
+              letter: "A",
+              text: "Highly prepared — I can adapt quickly and maintain performance during change",
+            },
+            {
+              letter: "B",
+              text: "Generally prepared but may require some adjustment time",
+            },
+            {
+              letter: "C",
+              text: "Somewhat unprepared; change impacts my effectiveness",
+            },
+            {
+              letter: "D",
+              text: "Not prepared; change significantly disrupts my performance",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "How effectively do teams leverage digital tools and new approaches to improve how work is done?",
+          options: [
+            {
+              letter: "A",
+              text: "Teams actively use digital tools and new approaches to continuously improve efficiency and outcomes",
+            },
+            {
+              letter: "B",
+              text: "Teams use digital tools but focus mainly on basic functionality",
+            },
+            {
+              letter: "C",
+              text: "Limited use of tools to improve how work is done",
+            },
+            {
+              letter: "D",
+              text: "Teams rely on traditional methods with minimal digital optimisation",
+            },
+          ],
+        },
+        {
+          section: "Section 8: Digital Skills & Workplace Technology",
+          text: "What is the most significant gap affecting your organisation's future readiness?",
+          options: [
+            {
+              letter: "A",
+              text: "Limited capability to adopt and leverage new technologies effectively",
+            },
+            {
+              letter: "B",
+              text: "Lack of continuous learning and upskilling culture",
+            },
+            {
+              letter: "C",
+              text: "Weak innovation and experimentation practices",
+            },
+            {
+              letter: "D",
+              text: "Low preparedness for change and evolving work demands",
+            },
+          ],
+        },
+
+        // ── SECTION 9: AI IN THE WORKPLACE & INTELLIGENT PRODUCTIVITY ───────
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How effectively are AI tools used to support your daily work and productivity?",
+          options: [
+            {
+              letter: "A",
+              text: "AI tools are actively integrated into my workflow, enabling automation, faster execution, and improved quality of outputs across tasks",
+            },
+            {
+              letter: "B",
+              text: "I use AI tools for specific tasks (e.g. drafting, analysis), but they are not fully integrated into my workflow",
+            },
+            {
+              letter: "C",
+              text: "I have limited or occasional use of AI tools, with minimal impact on my productivity",
+            },
+            {
+              letter: "D",
+              text: "I do not use AI tools in my work or have no access to them",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How confident are you in your ability to use AI tools effectively (e.g. prompting, refining outputs, validating results)?",
+          options: [
+            {
+              letter: "A",
+              text: "High confidence — I can use AI tools strategically, refine outputs, and apply them effectively across different work scenarios",
+            },
+            {
+              letter: "B",
+              text: "Moderate confidence — I can use AI tools for basic tasks but may struggle with more advanced or optimal usage",
+            },
+            {
+              letter: "C",
+              text: "Low confidence — I have limited understanding of how to use AI tools effectively",
+            },
+            {
+              letter: "D",
+              text: "No confidence or exposure to using AI tools",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How well are AI tools integrated into your team's processes and workflows?",
+          options: [
+            {
+              letter: "A",
+              text: "AI usage is embedded into workflows, with clear use cases and consistent application across tasks and teams",
+            },
+            {
+              letter: "B",
+              text: "AI is used in some processes but not consistently or systematically",
+            },
+            {
+              letter: "C",
+              text: "AI usage is ad-hoc and not integrated into workflows",
+            },
+            {
+              letter: "D",
+              text: "AI is not integrated into any team processes",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How clearly defined are the guidelines or expectations for using AI in your organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Clear guidelines exist on how to use AI effectively and responsibly, and these are consistently followed",
+            },
+            {
+              letter: "B",
+              text: "Some guidance exists, but it is not comprehensive or consistently applied",
+            },
+            { letter: "C", text: "Limited or informal guidance on AI usage" },
+            {
+              letter: "D",
+              text: "No clear guidance or expectations regarding AI usage",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How effectively does your organisation support your development in using AI tools?",
+          options: [
+            {
+              letter: "A",
+              text: "Structured training and continuous learning opportunities are provided, enabling effective and evolving use of AI",
+            },
+            {
+              letter: "B",
+              text: "Some training or exposure is provided but not consistently or at scale",
+            },
+            {
+              letter: "C",
+              text: "Limited opportunities to learn or improve AI usage",
+            },
+            {
+              letter: "D",
+              text: "No support or training provided for AI usage",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How effectively do you use AI to improve the quality and speed of your work outputs?",
+          options: [
+            {
+              letter: "A",
+              text: "AI consistently enhances both speed and quality, enabling higher-value output and improved efficiency",
+            },
+            {
+              letter: "B",
+              text: "AI improves speed or quality in some tasks but not consistently",
+            },
+            { letter: "C", text: "AI has minimal impact on my work outcomes" },
+            { letter: "D", text: "AI is not used to improve work outputs" },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How well are risks associated with AI use (e.g. accuracy, data privacy, misuse) understood and managed in your work?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong awareness and disciplined use of AI, including validation of outputs and adherence to data and privacy guidelines",
+            },
+            {
+              letter: "B",
+              text: "General awareness of risks, but practices are not always consistent",
+            },
+            {
+              letter: "C",
+              text: "Limited awareness of risks or how to manage them",
+            },
+            {
+              letter: "D",
+              text: "No awareness or consideration of AI-related risks",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "How effectively is the organisation enabling the use of AI and emerging technologies in your work?",
+          options: [
+            {
+              letter: "A",
+              text: "AI and emerging tools are actively integrated into workflows, with clear guidance, training, and measurable impact",
+            },
+            {
+              letter: "B",
+              text: "Some adoption exists but lacks consistency or structured enablement",
+            },
+            {
+              letter: "C",
+              text: "Limited exposure and support for using AI tools",
+            },
+            {
+              letter: "D",
+              text: "No meaningful enablement or adoption of AI technologies",
+            },
+          ],
+        },
+        {
+          section: "Section 9: AI in the Workplace & Intelligent Productivity",
+          text: "What is the most significant barrier to effective use of AI in your work?",
+          options: [
+            {
+              letter: "A",
+              text: "Lack of advanced skills or understanding of how to use AI effectively",
+            },
+            {
+              letter: "B",
+              text: "Limited integration of AI into workflows and daily processes",
+            },
+            {
+              letter: "C",
+              text: "Lack of clear guidance, structure, or organisational direction",
+            },
+            {
+              letter: "D",
+              text: "Limited access to tools or support for using AI",
+            },
+          ],
+        },
+
+        // ── SECTION 10: HEALTH, SAFETY & WORKPLACE ENVIRONMENT ─────────────
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How clearly are health and safety standards, policies, and expectations defined and communicated?",
+          options: [
+            {
+              letter: "A",
+              text: "Standards are clearly defined, regularly communicated, and fully understood, guiding consistent safe behaviour across all teams",
+            },
+            {
+              letter: "B",
+              text: "Standards are generally clear but not always consistently reinforced or understood",
+            },
+            {
+              letter: "C",
+              text: "Standards exist but are not clearly communicated or consistently understood",
+            },
+            {
+              letter: "D",
+              text: "Standards are unclear or not effectively communicated",
+            },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How consistently are health and safety practices followed in your day-to-day work?",
+          options: [
+            {
+              letter: "A",
+              text: "Safety practices are consistently followed and embedded in daily operations, regardless of pressure or deadlines",
+            },
+            {
+              letter: "B",
+              text: "Safety practices are generally followed but may be compromised in certain situations",
+            },
+            {
+              letter: "C",
+              text: "Safety practices are inconsistently followed across teams or situations",
+            },
+            {
+              letter: "D",
+              text: "Safety practices are frequently ignored or not prioritised",
+            },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How comfortable are you reporting safety concerns, risks, or incidents?",
+          options: [
+            {
+              letter: "A",
+              text: "Very comfortable — there is a strong culture of openness, and concerns are taken seriously and addressed promptly",
+            },
+            {
+              letter: "B",
+              text: "Generally comfortable, though response or follow-up may vary",
+            },
+            {
+              letter: "C",
+              text: "Hesitant to report concerns due to uncertainty or lack of follow-through",
+            },
+            { letter: "D", text: "Not comfortable reporting concerns" },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How effectively are safety risks identified, assessed, and addressed?",
+          options: [
+            {
+              letter: "A",
+              text: "Risks are proactively identified and managed with clear actions to prevent incidents",
+            },
+            {
+              letter: "B",
+              text: "Risks are identified and addressed but not consistently or proactively",
+            },
+            {
+              letter: "C",
+              text: "Risk management is reactive, often after issues arise",
+            },
+            {
+              letter: "D",
+              text: "Risks are not effectively identified or managed",
+            },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How well does the organisation support your physical and mental wellbeing?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong support systems exist (e.g. workload management, wellbeing initiatives), enabling sustained performance and wellbeing",
+            },
+            {
+              letter: "B",
+              text: "Some support exists but is not consistently applied or accessible",
+            },
+            {
+              letter: "C",
+              text: "Limited support for wellbeing, with noticeable impact on performance",
+            },
+            {
+              letter: "D",
+              text: "No meaningful support for physical or mental wellbeing",
+            },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How conducive is your work environment (physical or remote) to safe and effective performance?",
+          options: [
+            {
+              letter: "A",
+              text: "The work environment is well-designed, safe, and fully supports productivity and comfort",
+            },
+            {
+              letter: "B",
+              text: "The environment generally supports work but has some limitations",
+            },
+            {
+              letter: "C",
+              text: "The environment presents recurring challenges affecting safety or productivity",
+            },
+            {
+              letter: "D",
+              text: "The environment significantly hinders safe and effective performance",
+            },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "How effectively are incidents, near-misses, or safety issues reviewed and used for improvement?",
+          options: [
+            {
+              letter: "A",
+              text: "Issues are systematically reviewed, with clear learning and preventive actions implemented",
+            },
+            {
+              letter: "B",
+              text: "Reviews occur but are not consistently followed by improvement actions",
+            },
+            { letter: "C", text: "Limited review and learning from incidents" },
+            {
+              letter: "D",
+              text: "Issues are not formally reviewed or used for improvement",
+            },
+          ],
+        },
+        {
+          section: "Section 10: Health, Safety & Workplace Environment",
+          text: "What is the most significant gap affecting health, safety, or workplace environment in your organisation?",
+          options: [
+            {
+              letter: "A",
+              text: "Inconsistent application of safety practices",
+            },
+            {
+              letter: "B",
+              text: "Limited proactive identification and management of risks",
+            },
+            {
+              letter: "C",
+              text: "Weak culture around reporting and accountability",
+            },
+            {
+              letter: "D",
+              text: "Insufficient support for wellbeing and work environment",
+            },
+          ],
+        },
+
+        // ── SECTION 11: PROCESSES, SYSTEMS & WORK ENVIRONMENT ──────────────
+        {
+          section: "Section 11: Processes, Systems & Work Environment",
+          text: "How effective are internal processes and systems in supporting execution?",
+          options: [
+            {
+              letter: "A",
+              text: "Processes are well-defined, standardised, and enable efficient, high-quality delivery",
+            },
+            {
+              letter: "B",
+              text: "Processes are generally effective but include inefficiencies or inconsistencies",
+            },
+            {
+              letter: "C",
+              text: "Processes are unclear or inconsistent, causing delays and rework",
+            },
+            {
+              letter: "D",
+              text: "Processes are poorly defined or ineffective, significantly hindering performance",
+            },
+          ],
+        },
+        {
+          section: "Section 11: Processes, Systems & Work Environment",
+          text: "How conducive is the work environment to sustained productivity and performance?",
+          options: [
+            {
+              letter: "A",
+              text: "Environment consistently supports focus, collaboration, and high performance",
+            },
+            {
+              letter: "B",
+              text: "Generally supportive but with occasional disruptions",
+            },
+            {
+              letter: "C",
+              text: "Environment presents recurring challenges affecting productivity",
+            },
+            {
+              letter: "D",
+              text: "Environment significantly limits productivity and engagement",
+            },
+          ],
+        },
+
+        // ── SECTION 12: LEARNING, DEVELOPMENT & GROWTH ─────────────────────
+        {
+          section: "Section 12: Learning, Development & Growth",
+          text: "How effectively does the organisation support your development and skill improvement?",
+          options: [
+            {
+              letter: "A",
+              text: "Structured development opportunities aligned with role requirements, with clear pathways and follow-through",
+            },
+            {
+              letter: "B",
+              text: "Development opportunities exist but are not consistently structured or aligned",
+            },
+            {
+              letter: "C",
+              text: "Limited development support with minimal impact on capability",
+            },
+            { letter: "D", text: "No meaningful support for development" },
+          ],
+        },
+        {
+          section: "Section 12: Learning, Development & Growth",
+          text: "How effectively are skill gaps identified and addressed within your team or role?",
+          options: [
+            {
+              letter: "A",
+              text: "Skill gaps are proactively identified and addressed through targeted, role-specific development actions",
+            },
+            {
+              letter: "B",
+              text: "Skill gaps are identified but not always effectively addressed",
+            },
+            { letter: "C", text: "Limited visibility or action on skill gaps" },
+            { letter: "D", text: "Skill gaps are not identified or addressed" },
+          ],
+        },
+        {
+          section: "Section 12: Learning, Development & Growth",
+          text: "How well are learning and development opportunities aligned with your role and performance requirements?",
+          options: [
+            {
+              letter: "A",
+              text: "Learning is clearly aligned to role requirements and business priorities, with targeted development that directly improves performance",
+            },
+            {
+              letter: "B",
+              text: "Learning is generally relevant but not always closely aligned to specific role or performance needs",
+            },
+            {
+              letter: "C",
+              text: "Learning opportunities exist but are loosely aligned to actual job requirements",
+            },
+            {
+              letter: "D",
+              text: "Learning is not aligned with role needs or performance expectations",
+            },
+          ],
+        },
+        {
+          section: "Section 12: Learning, Development & Growth",
+          text: "How effectively are you able to apply what you learn to your day-to-day work?",
+          options: [
+            {
+              letter: "A",
+              text: "Learning is practical and consistently applied, resulting in improved performance and measurable outcomes",
+            },
+            {
+              letter: "B",
+              text: "Learning is applied in some areas but not consistently",
+            },
+            {
+              letter: "C",
+              text: "Limited application of learning due to lack of relevance or support",
+            },
+            { letter: "D", text: "Learning is rarely applied in actual work" },
+          ],
+        },
+        {
+          section: "Section 12: Learning, Development & Growth",
+          text: "How structured and consistent is the organisation's approach to employee development?",
+          options: [
+            {
+              letter: "A",
+              text: "Development is structured with clear plans, regular reviews, and measurable progress against defined capability goals",
+            },
+            {
+              letter: "B",
+              text: "Some structure exists but is not consistently applied across teams",
+            },
+            {
+              letter: "C",
+              text: "Development is informal or ad-hoc, with limited follow-through",
+            },
+            {
+              letter: "D",
+              text: "No structured approach to employee development",
+            },
+          ],
+        },
+        {
+          section: "Section 12: Learning, Development & Growth",
+          text: "How effectively does your manager support your development and growth?",
+          options: [
+            {
+              letter: "A",
+              text: "Manager actively supports development through coaching, feedback, and structured growth plans",
+            },
+            {
+              letter: "B",
+              text: "Some support is provided but not consistently",
+            },
+            {
+              letter: "C",
+              text: "Limited involvement from manager in development",
+            },
+            {
+              letter: "D",
+              text: "No meaningful support for growth from manager",
+            },
+          ],
+        },
+
+        // ── SECTION 13: ORGANISATIONAL ALIGNMENT & CULTURE ─────────────────
+        {
+          section: "Section 13: Organisational Alignment & Culture",
+          text: "How well do you understand organisational priorities and how your work contributes to them?",
+          options: [
+            {
+              letter: "A",
+              text: "Clear line-of-sight between individual work, team goals, and organisational strategy",
+            },
+            {
+              letter: "B",
+              text: "General understanding with occasional gaps in alignment",
+            },
+            {
+              letter: "C",
+              text: "Limited clarity on how work contributes to broader goals",
+            },
+            {
+              letter: "D",
+              text: "No clear connection between individual work and organisational objectives",
+            },
+          ],
+        },
+        {
+          section: "Section 13: Organisational Alignment & Culture",
+          text: "How would you describe the organisation's culture in driving performance and collaboration?",
+          options: [
+            {
+              letter: "A",
+              text: "Strong performance-oriented culture with high collaboration, trust, and accountability",
+            },
+            {
+              letter: "B",
+              text: "Generally positive culture with some inconsistencies",
+            },
+            {
+              letter: "C",
+              text: "Mixed culture with noticeable silos or behavioural gaps",
+            },
+            {
+              letter: "D",
+              text: "Weak culture negatively impacting performance and engagement",
+            },
+          ],
+        },
+
+        // ── SECTION 14: KEY PERFORMANCE CONSTRAINT ─────────────────────────
+        {
+          section: "Section 14: Key Performance Constraint",
+          text: "What is the most significant constraint affecting your ability to perform effectively?",
+          options: [
+            {
+              letter: "A",
+              text: "Misalignment in priorities and lack of clarity in direction",
+            },
+            {
+              letter: "B",
+              text: "Inefficiencies in processes, systems, or tools",
+            },
+            {
+              letter: "C",
+              text: "Gaps in leadership support, communication, or decision-making",
+            },
+            {
+              letter: "D",
+              text: "Workload pressure and resource limitations impacting delivery",
+            },
+          ],
+        },
+      ]; // end QUESTIONS
+
+      // ── STATE ─────────────────────────────────────────────────────────
+      var lead = {};
+      var current = 0;
+      var answers = new Array(QUESTIONS.length).fill(null);
+
+      // ── HELPERS ───────────────────────────────────────────────────────
+      function showView(id) {
+        ["lead-view", "form-view", "submitting-view", "result-view"].forEach(
+          function (v) {
+            document.getElementById(v).style.display =
+              v === id ? "block" : "none";
+          },
+        );
+      }
+
+      function checkLead() {
+        var n = document.getElementById("lead-name").value.trim();
+        var r = document.getElementById("lead-role").value.trim();
+        var d = document.getElementById("lead-dept").value.trim();
+        var o = document.getElementById("lead-org").value.trim();
+        var i = document.getElementById("lead-industry").value.trim();
+        var s = document.getElementById("lead-size").value;
+        var e = document.getElementById("lead-email").value.trim();
+        var ok =
+          n &&
+          r &&
+          d &&
+          o &&
+          i &&
+          s &&
+          e &&
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+        document.getElementById("btn-start").disabled = !ok;
+      }
+
+      function startDiagnostic() {
+        lead = {
+          name: document.getElementById("lead-name").value.trim(),
+          role: document.getElementById("lead-role").value.trim(),
+          dept: document.getElementById("lead-dept").value.trim(),
+          org: document.getElementById("lead-org").value.trim(),
+          industry: document.getElementById("lead-industry").value.trim(),
+          size: document.getElementById("lead-size").value,
+          email: document.getElementById("lead-email").value.trim(),
+          phone: document.getElementById("lead-phone").value.trim(),
+        };
+        document.getElementById("form-org-label").textContent =
+          lead.org + " \u00b7 " + lead.dept;
+        showView("form-view");
+        renderQ();
+      }
+
+      function renderQ() {
+        var q = QUESTIONS[current];
+        var total = QUESTIONS.length;
+        var pct = Math.round(((current + 1) / total) * 100);
+
+        document.getElementById("progress").style.width = pct + "%";
+        document.getElementById("step-label").textContent =
+          "Question " + (current + 1) + " of " + total;
+        document.getElementById("section-label").textContent = q.section;
+        document.getElementById("btn-back").style.visibility =
+          current > 0 ? "visible" : "hidden";
+        var isLast = current === total - 1;
+        document.getElementById("btn-next").textContent = isLast
+          ? "Submit responses"
+          : "Continue";
+        document.getElementById("btn-next").disabled =
+          answers[current] === null;
+
+        // Section intro on first question of each new section
+        var showIntro =
+          current === 0 || QUESTIONS[current - 1].section !== q.section;
+        var introHtml = showIntro
+          ? '<div class="section-intro">' + q.section + "</div>"
+          : "";
+
+        var optHtml = "";
+        q.options.forEach(function (opt, i) {
+          var sel = answers[current] === i;
+          optHtml +=
+            '<button class="opt-btn' +
+            (sel ? " selected" : "") +
+            '" onclick="selectOpt(' +
+            i +
+            ')">' +
+            '<span class="opt-letter">' +
+            opt.letter +
+            "</span>" +
+            "<span>" +
+            opt.text +
+            "</span>" +
+            "</button>";
+        });
+
+        document.getElementById("q-area").innerHTML =
+          introHtml +
+          '<p class="q-text">' +
+          q.text +
+          "</p>" +
+          '<div class="options">' +
+          optHtml +
+          "</div>";
+      }
+
+      function selectOpt(i) {
+        answers[current] = i;
+        renderQ();
+      }
+
+      function goNext() {
+        if (current < QUESTIONS.length - 1) {
+          current++;
+          renderQ();
+        } else submitResponses();
+      }
+
+      function goBack() {
+        if (current > 0) {
+          current--;
+          renderQ();
+        }
+      }
+
+      // ── SUBMIT ────────────────────────────────────────────────────────
+      async function submitResponses() {
+        showView("submitting-view");
+        await sendEmails();
+        showThankYou();
+      }
+
+      function showThankYou() {
+        showView("result-view");
+        var isConfigured = FORMSPREE_ENDPOINT !== "YOUR_FORMSPREE_ENDPOINT";
+        var html = "";
+        if (!isConfigured) {
+          html +=
+            '<div class="config-banner"><strong>Setup required:</strong> Replace <code>YOUR_FORMSPREE_ENDPOINT</code> in the script with your Formspree URL to enable email delivery. Sign up free at formspree.io.</div>';
+        }
+        html +=
+          '<span class="thankyou-icon">&#9989;</span>' +
+          '<div class="thankyou-title">Thank you, ' +
+          lead.name +
+          "!</div>" +
+          '<p class="thankyou-body">Your Team Diagnostic responses for <strong>' +
+          lead.dept +
+          "</strong> at <strong>" +
+          lead.org +
+          "</strong> have been successfully submitted.<br><br>" +
+          "We have sent a confirmation to <strong>" +
+          lead.email +
+          "</strong>. Our team will review your responses and be in touch within <strong>24 hours</strong> with your capability report and recommendations.</p>" +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+          '<button class="btn-primary" onclick="window.location.href=\'mailto:' +
+          CLIENT_SUPPORT_EMAIL +
+          "?subject=Team Diagnostic — " +
+          encodeURIComponent(lead.dept) +
+          ", " +
+          encodeURIComponent(lead.org) +
+          "'\">Contact us directly</button>" +
+          '<button class="btn-outline" onclick="restartFull()">Start a new assessment</button>' +
+          "</div>" +
+          '<div class="email-status" id="email-status"></div>';
+        document.getElementById("result-inner").innerHTML = html;
+      }
+
+      // ── EMAIL ─────────────────────────────────────────────────────────
+      async function sendEmails() {
+        var isConfigured = FORMSPREE_ENDPOINT !== "YOUR_FORMSPREE_ENDPOINT";
+        var statusEl = document.getElementById("email-status");
+
+        // Group answers by section
+        var sections = {};
+        var sectionOrder = [];
+        QUESTIONS.forEach(function (q, i) {
+          if (!sections[q.section]) {
+            sections[q.section] = [];
+            sectionOrder.push(q.section);
+          }
+          var a = answers[i];
+          var chosen = a !== null ? q.options[a] : null;
+          sections[q.section].push(
+            "Q: " +
+              q.text +
+              "\n" +
+              "A: " +
+              (chosen
+                ? chosen.letter + ". " + chosen.text
+                : "No answer recorded"),
+          );
+        });
+
+        // Full answers text
+        var answersBlock = sectionOrder
+          .map(function (sec) {
+            return (
+              sec + "\n" + "-".repeat(50) + "\n" + sections[sec].join("\n\n")
+            );
+          })
+          .join("\n\n");
+
+        // Per-section A/B/C/D summary
+        var qIdx = 0;
+        var summaryLines = sectionOrder.map(function (sec) {
+          var counts = { A: 0, B: 0, C: 0, D: 0 };
+          var len = sections[sec].length;
+          for (var j = qIdx; j < qIdx + len; j++) {
+            var a = answers[j];
+            if (a !== null) {
+              var letter = QUESTIONS[j].options[a].letter;
+              if (counts[letter] !== undefined) counts[letter]++;
+            }
+          }
+          qIdx += len;
+          return (
+            sec +
+            ": A=" +
+            counts.A +
+            " B=" +
+            counts.B +
+            " C=" +
+            counts.C +
+            " D=" +
+            counts.D
+          );
+        });
+
+        var sep = "=".repeat(52);
+        var line = "-".repeat(40);
+
+        var adminReport =
+          "SEEDBUILDERS \u2014 TEAM DIAGNOSTIC REPORT\n" +
+          sep +
+          "\n" +
+          "Submitted: " +
+          new Date().toLocaleString("en-NG", { timeZone: "Africa/Lagos" }) +
+          "\n\n" +
+          "RESPONDENT INFORMATION\n" +
+          line +
+          "\n" +
+          "Name:         " +
+          lead.name +
+          "\n" +
+          "Role:         " +
+          lead.role +
+          "\n" +
+          "Department:   " +
+          lead.dept +
+          "\n" +
+          "Organisation: " +
+          lead.org +
+          "\n" +
+          "Industry:     " +
+          lead.industry +
+          "\n" +
+          "Size:         " +
+          lead.size +
+          "\n" +
+          "Email:        " +
+          lead.email +
+          "\n" +
+          "Phone:        " +
+          (lead.phone || "Not provided") +
+          "\n\n" +
+          "RESPONSE SUMMARY (A/B/C/D counts per section)\n" +
+          line +
+          "\n" +
+          summaryLines.join("\n") +
+          "\n\n" +
+          "FULL RESPONSES\n" +
+          line +
+          "\n" +
+          answersBlock +
+          "\n\n" +
+          sep +
+          "\n" +
+          "Report generated by Seedbuilders Team Diagnostic Tool\nwww.seedbuildersng.com";
+
+        var clientConfirmation =
+          "Hi " +
+          lead.name +
+          ",\n\n" +
+          "Thank you for completing the Seedbuilders Team Diagnostic for the " +
+          lead.dept +
+          " team at " +
+          lead.org +
+          ".\n\n" +
+          "Your responses across all 14 sections have been successfully submitted. Our team is reviewing your assessment and will be in touch within 24 hours with a personalised capability report and recommendations.\n\n" +
+          "If you have any immediate questions, please contact us at " +
+          CLIENT_SUPPORT_EMAIL +
+          ".\n\n" +
+          "Warm regards,\nThe Seedbuilders Team\nwww.seedbuildersng.com";
+
+        if (!isConfigured) return;
+
+        try {
+          var resp = await fetch(FORMSPREE_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              _subject:
+                "Team Diagnostic \u2014 " +
+                lead.dept +
+                ", " +
+                lead.org +
+                " (" +
+                lead.name +
+                ")",
+              _replyto: lead.email,
+              admin_report: adminReport,
+              client_confirmation: clientConfirmation,
+              respondent_name: lead.name,
+              respondent_role: lead.role,
+              department: lead.dept,
+              organisation: lead.org,
+              industry: lead.industry,
+              org_size: lead.size,
+              email: lead.email,
+              phone: lead.phone || "Not provided",
+            }),
+          });
+          if (resp.ok) {
+            if (statusEl) {
+              statusEl.className = "email-status sent";
+              statusEl.textContent = "Confirmation sent to " + lead.email;
+            }
+          } else {
+            if (statusEl) {
+              statusEl.className = "email-status error";
+              statusEl.textContent =
+                "Email delivery failed \u2014 please contact us directly.";
+            }
+          }
+        } catch (e) {
+          if (statusEl) {
+            statusEl.className = "email-status error";
+            statusEl.textContent =
+              "Email delivery failed \u2014 please contact us directly.";
+          }
+        }
+      }
+
+      // ── RESTART ───────────────────────────────────────────────────────
+      function restartFull() {
+        current = 0;
+        answers = new Array(QUESTIONS.length).fill(null);
+        lead = {};
+        [
+          "lead-name",
+          "lead-role",
+          "lead-dept",
+          "lead-org",
+          "lead-industry",
+          "lead-email",
+          "lead-phone",
+        ].forEach(function (id) {
+          document.getElementById(id).value = "";
+        });
+        document.getElementById("lead-size").value = "";
+        document.getElementById("btn-start").disabled = true;
+        showView("lead-view");
+      }
+    </script>
+  </body>
+</html>
